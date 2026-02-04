@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "Bash(pyinstaller:*)",
+      "Bash(dir:*)",
+      "Bash(./dist/labelme.exe:*)",
+      "Bash(.venv/Scripts/python:*)",
+      "Bash(.venv/Scripts/pip install:*)",
+      "Bash(.venv/Scripts/pyinstaller:*)",
+      "Bash(taskkill:*)"
+    ]
+  }
+}

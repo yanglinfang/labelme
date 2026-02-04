@@ -11,6 +11,16 @@ flags: null
 label_flags: null
 labels: null
 file_search: null
+
+# Quick label configuration for rapid annotation
+# Maps keyboard shortcut keys to label names
+# Example:
+# quick_labels:
+#   "1": "Grabber"
+#   "2": "Litter"
+#   "3": "CollectionBag"
+#   "4": "DataCollector"
+quick_labels: null
 sort_labels: true
 validate_label: null
 
@@ -122,3 +132,9 @@ shortcuts:
   show_all_polygons: null
   hide_all_polygons: null
   toggle_all_polygons: T
+
+  # Quick label shortcuts (used with quick_labels config)
+  quick_label_1: "1"
+  quick_label_2: "2"
+  quick_label_3: "3"
+  quick_label_4: "4"

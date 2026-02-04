@@ -1,0 +1,26 @@
+# Litter Detection Labeling Configuration
+# Use with: labelme --config litter_detection_config.yaml
+
+# Disable label dialog popup for quick labeling
+display_label_popup: false
+
+# Pre-defined labels for litter detection
+labels:
+  - Grabber
+  - Litter
+  - CollectionBag
+  - DataCollector
+
+# Quick label configuration
+# Press 1-4 to select label and enter rectangle mode
+quick_labels:
+  "1": "Grabber"
+  "2": "Litter"
+  "3": "CollectionBag"
+  "4": "DataCollector"
+
+# Auto-save for faster workflow
+auto_save: true
+
+# Remember previous settings
+keep_prev: true

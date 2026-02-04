@@ -613,6 +613,9 @@ class MainWindow(QtWidgets.QMainWindow):
         if self._config["canvas"]["fill_drawing"]:
             fill_drawing.trigger()
 
+        # Quick label actions for rapid annotation
+        self.quickLabelActions = self.createQuickLabelActions()
+
         # Label list context menu.
         labelMenu = QtWidgets.QMenu()
         utils.addActions(labelMenu, (edit, delete))
@@ -647,6 +650,7 @@ class MainWindow(QtWidgets.QMainWindow):
             createLineStripMode=createLineStripMode,
             createAiPolygonMode=createAiPolygonMode,
             createAiMaskMode=createAiMaskMode,
+            quickLabelActions=self.quickLabelActions,
             zoom=zoom,
             zoomIn=zoomIn,
             zoomOut=zoomOut,
@@ -707,7 +711,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 createAiMaskMode,
                 editMode,
                 brightnessContrast,
-            ),
+            ) + tuple(self.quickLabelActions),
             onShapesPresent=(saveAs, hideAll, showAll, toggleAll),
         )
 
@@ -1291,6 +1295,72 @@ class MainWindow(QtWidgets.QMainWindow):
         elif self._config["default_shape_color"]:
             return self._config["default_shape_color"]
         return (0, 255, 0)
+
+    def ensureLabelExists(self, label):
+        """Ensure a label exists in the unique label list.
+
+        If the label doesn't exist, create and add it.
+
+        Args:
+            label: The label string to ensure exists
+
+        Returns:
+            The QListWidgetItem for the label
+        """
+        item = self.uniqLabelList.findItemByLabel(label)
+        if item is None:
+            item = self.uniqLabelList.createItemFromLabel(label)
+            self.uniqLabelList.addItem(item)
+            rgb = self._get_rgb_by_label(label)
+            self.uniqLabelList.setItemLabel(item, label, rgb)
+        return item
+
+    def quickLabelRectangle(self, label):
+        """Quick label action: select label and enter rectangle drawing mode.
+
+        Args:
+            label: The label to pre-select for annotation
+        """
+        if self.image.isNull():
+            return
+
+        item = self.ensureLabelExists(label)
+        self.uniqLabelList.clearSelection()
+        self.uniqLabelList.setCurrentItem(item)
+
+        self.toggleDrawMode(False, createMode="rectangle")
+
+        self.status(self.tr("Quick Label: {} (Rectangle mode)").format(label))
+
+    def createQuickLabelActions(self):
+        """Create quick label actions from configuration.
+
+        Returns:
+            List of created QAction objects
+        """
+        quick_labels = self._config.get("quick_labels")
+        if not quick_labels:
+            return []
+
+        action = functools.partial(utils.newAction, self)
+        shortcuts = self._config["shortcuts"]
+        quick_actions = []
+
+        for key, label in quick_labels.items():
+            shortcut_key = "quick_label_{}".format(key)
+            shortcut = shortcuts.get(shortcut_key)
+
+            quick_action = action(
+                self.tr("Quick Label: {}").format(label),
+                lambda lbl=label: self.quickLabelRectangle(lbl),
+                shortcut,
+                "objects",
+                self.tr("Select '{}' and enter rectangle mode").format(label),
+                enabled=False,
+            )
+            quick_actions.append(quick_action)
+
+        return quick_actions
 
     def remLabels(self, shapes):
         for shape in shapes:
